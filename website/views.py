@@ -1,11 +1,40 @@
 from django.shortcuts import render
+from website.forms import ContactForm
+from django.contrib import messages
 
-from django.http import HttpResponse,JsonResponse
+
 def index(request):
-    return render(request,'website/index.html')
+    return render(request, 'website/index.html')
+
 
 def about(request):
-    return render(request,'website/about.html')
+    return render(request, 'website/about.html')
 
-def call(request):
-    return render(request,'website/call.html')
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS, 'your ticket submited successfully')
+        else:
+            messages.add_message(request, messages.ERROR, 'your ticket didnt submited')
+    form = ContactForm()
+    context = {'form': form}
+    return render(request, 'website/contact.html', context)
+
+
+def resume(request):
+    return render(request, 'website/resume.html')
+
+
+def services(request):
+    return render(request, 'website/services.html')
+
+
+def starter_page(request):
+    return render(request, 'website/starter-page.html')
+
+
+def resume_page(request):
+    return render(request, 'website/resume.html')
