@@ -226,7 +226,6 @@ h6 {
   .navmenu>ul>li {
     white-space: nowrap;
     padding: 15px 14px;
-    direction: rtl !important;
   }
 
   .navmenu>ul>li:last-child {
