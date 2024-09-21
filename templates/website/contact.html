@@ -72,12 +72,19 @@
                                 <textarea class="form-control" name="message" rows="10" id="message-field" required=""></textarea>
                             </div>
 
+                            <div class="col-md-12">
+                              <div>
+                                {{form.captcha}}
+                              </div>
+                            </div>
+
                             <div class="col-md-12 text-center">
                                 <div class="error-message" style="display:none;color:white;"></div>
                                 <div class="sent-message" style="display:none;color:white;">Your message has been sent. Thank you!</div>
 
                                 <button type="submit">Send Message</button>
                             </div>
+
                         </div>
                     </form>
                 </div><!-- End Contact Form -->
@@ -92,42 +99,45 @@
 
 <!-- جاوااسکریپت برای مدیریت پیام‌ها -->
 <script>
-    document.querySelector('#contact-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // جلوگیری از ارسال پیش‌فرض فرم
+  document.querySelector('#contact-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // جلوگیری از ارسال پیش‌فرض فرم
 
-        let form = this;
-        let errorMessageElement = document.querySelector('.error-message');
-        let sentMessageElement = document.querySelector('.sent-message');
+    let form = this;
+    let errorMessageElement = document.querySelector('.error-message');
+    let sentMessageElement = document.querySelector('.sent-message');
 
-        // پنهان کردن پیام‌های قبلی
-        errorMessageElement.style.display = 'none';
-        sentMessageElement.style.display = 'none';
+    // پنهان کردن پیام‌های قبلی
+    errorMessageElement.style.display = 'none';
+    sentMessageElement.style.display = 'none';
 
-        // ارسال فرم با استفاده از Fetch API
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-        }).then(response => {
-            if (response.ok) {
+    // ارسال فرم با استفاده از Fetch API
+    fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+    }).then(response => {
+        return response.json().then(data => {
+            if (response.ok && data.success) {
                 // نمایش پیام موفقیت
                 sentMessageElement.style.display = 'block';
-                sentMessageElement.textContent = 'Your message has been sent successfully!'; // پیام موفقیت
+                sentMessageElement.textContent = data.message;
 
                 // تأخیر ۳ ثانیه قبل از ریدایرکت
                 setTimeout(() => {
                     window.location.href = "/about"; // ریدایرکت به صفحه مورد نظر
-                }, 3000); // 3000 میلی‌ثانیه برابر با ۳ ثانیه
+                }, 3000);
             } else {
                 // نمایش پیام خطا
                 errorMessageElement.style.display = 'block';
-                errorMessageElement.textContent = 'Form submission failed. Please try again.';
+                errorMessageElement.textContent = 'Form submission failed. Please check the captcha and try again.';
             }
-        }).catch(error => {
-            // نمایش پیام خطا
-            errorMessageElement.style.display = 'block';
-            errorMessageElement.textContent = error.message;
         });
+    }).catch(error => {
+        // نمایش پیام خطا
+        errorMessageElement.style.display = 'block';
+        errorMessageElement.textContent = error.message;
     });
+});
+
 </script>
 
 {% endblock %}

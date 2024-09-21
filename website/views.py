@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from website.forms import ContactForm
-from django.contrib import messages
+from django.http import JsonResponse
 
 
 def index(request):
@@ -16,13 +16,13 @@ def contact(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.SUCCESS, 'your ticket submited successfully')
-            return redirect('website:services')
+            return JsonResponse({'success': True, 'message': 'Your ticket has been submitted successfully.'})
         else:
-            messages.add_message(request, messages.ERROR, 'your ticket didnt submited')
-    form = ContactForm()
-    context = {'form': form}
-    return render(request, 'website/contact.html', context)
+            # ارسال خطاها از جمله کپچا به صورت JSON
+            return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
+    else:
+        form = ContactForm()
+    return render(request, 'website/contact.html', {'form': form})
 
 
 def resume(request):
