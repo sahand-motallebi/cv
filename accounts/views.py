@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 def Login_View(request):
@@ -14,7 +15,11 @@ def Login_View(request):
                 user = authenticate(request, username=name, password=password)
                 if user is not None:
                     login(request, user)
-                    return redirect('/')
+                    return JsonResponse({'status': 'success'})  # موفقیت
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'Invalid username or password.'})  # نام کاربری یا رمز عبور نادرست
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid form submission.'})  # ارسال فرم نادرست
 
         form = AuthenticationForm()
         context = {'form': form}

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from website.forms import ContactForm
 from django.contrib import messages
 
@@ -17,6 +17,7 @@ def contact(request):
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, 'your ticket submited successfully')
+            return redirect('website:services')
         else:
             messages.add_message(request, messages.ERROR, 'your ticket didnt submited')
     form = ContactForm()
