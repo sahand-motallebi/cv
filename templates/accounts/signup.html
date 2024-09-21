@@ -10,54 +10,91 @@
 </head>
 <body>
     <div class="wrapper">
-        <form method="post" action="{% url 'accounts:register' %}">
+        <form id="signup-form">
             {% csrf_token %}
             <h1>SignUp</h1>
             <div class="input-box">
-                <input type="text" name="username" placeholder="Username"
-                required>
+                <input type="text" name="username" placeholder="Username" required>
                 <i class='bx bx-user'></i>
             </div>
             <div class="input-box">
-                <input type="password" name="password1" placeholder="Password"
-                       required>
+                <input type="password" name="password1" placeholder="Password" required>
                 <i class='bx bxs-lock-alt'></i>
             </div>
 
             <div class="input-box">
-                <input type="password" name="password2" placeholder="Confirm Password"
-                       required>
+                <input type="password" name="password2" placeholder="Confirm Password" required>
                 <i class='bx bxs-lock-alt'></i>
-            </div>
-
-            <div class="remember-forgot">
-                <label><input type="checkbox">Remember me</label>
             </div>
 
             <button type="submit" class="btn">SignUp</button>
 
             <div class="register-link">
-                <p>have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
+                <p>Have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
             </div>
+
+            <div class="error-message" style="color: red; display: none;"></div>
+            <div class="success-message" style="color: green; display: none;"></div>
         </form>
     </div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // جلوگیری از ارسال پیش‌فرض فرم
+        
+            const formData = new FormData(this);
+            const errorMessage = document.querySelector('.error-message');
+            const successMessage = document.querySelector('.success-message');
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        
+            fetch("{% url 'accounts:register' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                },
+                body: formData,
+            }).then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.errors || 'An error occurred.');
+                    });
+                }
+                return response.json();
+            }).then(data => {
+                successMessage.textContent = data.message;
+                successMessage.style.display = 'block';
+                // ریدایرکت به صفحه اصلی یا لاگین
+                setTimeout(() => {
+                    window.location.href = "login";
+                }, 2000);
+            }).catch(error => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+        
+    </script>
 </body>
 </html>
 
 <style>
     :root {
-        --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-        --heading-font: "Raleway",  sans-serif;
-        --nav-font: "Poppins",  sans-serif;
-      }
-    body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: url("{% static 'img/background-auth.jpg' %}");
-    background-size: cover;
-    background-position: center;
-    font-family: var(--nav-font);
+        --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        --heading-font: "Raleway", sans-serif;
+        --nav-font: "Poppins", sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: url("{% static 'img/background-auth.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        font-family: var(--nav-font);
     }
 </style>

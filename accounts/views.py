@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib import messages
 
 
 def Login_View(request):
@@ -40,7 +41,9 @@ def Signup_View(request):
             form = UserCreationForm(request.POST)
             if form.is_valid():
                 form.save()
-                return redirect('/')
+                return JsonResponse({'success': True, 'message': 'User created successfully.'})
+            else:
+                return JsonResponse({'success': False, 'errors': form.errors}, status=400)
         form = UserCreationForm()
         context = {'form': form}
         return render(request, 'accounts/signup.html', context)
